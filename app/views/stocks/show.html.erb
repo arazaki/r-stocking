@@ -1,7 +1,18 @@
+<% @ticker = StockQuote::Stock.quote(@stock.ticker) %>
+  <% if !@ticker %>
+    The ticker: <%= stock.ticker %> does not exist!
+      <br />
+  <% else %>
+    <strong><%= @ticker.company_name %></strong><br />
+    Ticker symbol: <%= @ticker.symbol %><br />
+    Current price: <%= number_to_currency(@ticker.latest_price, :precision => 2, :delimeter => ',') %><br />
+    Previous close: <%= number_to_currency(@ticker.previous_close, :precision => 2, :delimeter => ',') %><br />
+    Percent change: <%= number_to_percentage(@ticker.change_percent, :precision => 2, :delimeter => ',') %><br />
+    YTD change: <%= number_to_percentage(@ticker.ytd_change, :precision => 2, :delimeter => ',') %><br />
+    Market Cap: <%= number_to_currency(@ticker.market_cap, :precision => 0, :delimeter => ',') %><br />
+    
+  <% end %>
 <p>
-  <strong>Ticker:</strong>
-  <%= @stock.ticker %>
-</p>
 
 <%= link_to 'Edit', edit_stock_path(@stock) %> |
 <%= link_to 'Back', stocks_path %>

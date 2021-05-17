@@ -1,24 +1,40 @@
-<h1>Stocks</h1>
-
-<table>
-  <thead>
+<table class="table table-striped table-hover table-bordered">
+  <thead class="thead-dark">
     <tr>
+      <th>Company</th>
       <th>Ticker</th>
-      <th>User</th>
-      <th colspan="3"></th>
+      <th>Current Price</th>
+      <th>Market Cap</th>
+      <th colspan="2"></th>
     </tr>
   </thead>
 
   <tbody>
     <% @stocks.each do |stock| %>
       <% if stock.user_id == current_user.id %>
-        <tr>
-          <td><%= stock.ticker %></td>
-          <td><%= stock.user_id %></td>
-          <td><%= link_to 'Show', stock %></td>
-          <td><%= link_to 'Edit', edit_stock_path(stock) %></td>
-          <td><%= link_to 'Destroy', stock, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-        </tr>
+      <!-- Must handle the error if the @ticker is not found
+      -> best place to handle is while creating a new ticker. If the string passed is not valid (ticker not found, the error must be handled)
+       -->
+        <% @ticker = StockQuote::Stock.quote(stock.ticker) %>
+        <% if !@ticker %>
+          <tr>
+            <td><%= link_to "Error", stock %></td>
+            <td><%= stock.ticker %></td>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td><center><%= link_to "Edit", edit_stock_path(stock) %></center></td>
+            <td><center><%= link_to "Delete", stock, method: :delete, data: { confirm: "Are you sure?" } %></center></td>
+          </tr>
+        <% else %>
+          <tr>
+            <td><%= link_to @ticker.company_name, stock %></td>
+            <td><%= @ticker.symbol %></td>
+            <td><%= number_to_currency(@ticker.latest_price, :precision => 2, :delimeter => ',') %></td>
+            <td><%= number_to_currency(@ticker.market_cap, :precision => 0, :delimeter => ',') %></td>
+            <td><center><%= link_to "Edit", edit_stock_path(stock) %></center></td>
+            <td><center><%= link_to "Delete", stock, method: :delete, data: { confirm: "Are you sure?" } %></center></td>
+          </tr>
+        <% end %>
       <% end %>
     <% end %>
   </tbody>
@@ -26,4 +42,4 @@
 
 <br>
 
-<%= link_to 'New Stock', new_stock_path %>
+<%= link_to "New Stock", new_stock_path %>
